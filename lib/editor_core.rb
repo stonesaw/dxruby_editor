@@ -69,8 +69,14 @@ class EditorCore
         @cursor_y -= 1
       end
     end
-    @cursor_y += 1 if Input.key_push?(K_DOWN)
-    @cursor_y -= 1 if Input.key_push?(K_UP)
+    if Input.key_push?(K_DOWN) || continuation_key_down?(K_DOWN)
+      @cursor_y += 1
+      @cursor_x = @content[@cursor_y - 2].length + 1 if @cursor_y > @content.length
+    end
+    if Input.key_push?(K_UP) || continuation_key_down?(K_UP)
+      @cursor_y -= 1
+      @cursor_x = 0 if @cursor_y < 1
+    end
 
     @cursor_y = [[1, @cursor_y].max, @content.length].min
     @cursor_x = [[1, @cursor_x].max, @content[@cursor_y - 1].length + 1].min
@@ -124,6 +130,16 @@ class EditorCore
         @content[@cursor_y - 1][@cursor_x - 2] = ''
       end
     end
+    if Input.key_push?(K_DELETE) || continuation_key_down?(K_DELETE)
+      if @cursor_x == @content[@cursor_y - 1].length + 1
+        if @cursor_y != @content.length
+          @content[@cursor_y - 1] << @content[@cursor_y]
+          @content.delete_at(@cursor_y)
+        end
+      else
+        @content[@cursor_y - 1][@cursor_x - 1] = ''
+      end
+    end
   end
 
   def string
@@ -134,7 +150,7 @@ class EditorCore
     str
   end
 
-  def check_continuation_key_down
+  private def check_continuation_key_down
     if !@_continuation_key_down[0].nil? && Input.key_down?(@_continuation_key_down[0]) && @_continuation_key_down[1] > 40
       keycode = @_int2keycode[@_continuation_key_down[0]]
       return nil if @_keys[keycode].nil?
@@ -150,7 +166,7 @@ class EditorCore
     end
   end
 
-  def continuation_key_down?(keycode)
+  private def continuation_key_down?(keycode)
     Input.key_down?(keycode) && @_continuation_key_down[0] == keycode && @_continuation_key_down[1] > 40
   end
 end

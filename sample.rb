@@ -15,8 +15,9 @@ Window.loop do
 
   editor.update
 
-  Window.draw_font(0, 0, "[Main Window] tick : #{tick}", Font.default)
+  Window.draw_font(0, 0, "[Main Window]", Font.default)
+  Window.draw_font(0, 24, "fps : #{Window.real_fps}, tick : #{tick}", Font.default)
 
-  editor.draw_window
+  editor.draw_at_window
   tick += 1
 end
