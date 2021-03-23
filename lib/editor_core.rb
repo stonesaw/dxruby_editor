@@ -2,7 +2,33 @@ class EditorCore
   attr_accessor :content, :cursor_x, :cursor_y
 
   def initialize
-    @content = ['']
+    _con = 
+"a = [1, 2, 3]
+a = [
+  1,
+  2, 3
+]
+hash = {a: 1}
+hash = {
+  key1: 10,
+  key2: 2.2
+}
+
+str = 'abc'
+if str =~ /a(.+)/
+  p $1
+end
+
+class A
+  def initialize(x, y)
+    @x = x
+    @y = y
+  end
+end
+
+instance = A.new(1, 2)
+"
+    @content = _con.split(/\R/)
     @cursor_x = 1
     @cursor_y = 1
 
@@ -45,6 +71,7 @@ class EditorCore
     @_keys.each do |key, val|
       @_int2keycode[eval("K_#{key}")] = key
     end
+    @indent_size = 2
   end
 
   def update_cursor(tick)
@@ -105,13 +132,8 @@ class EditorCore
     check_continuation_key_down
 
     if Input.key_push?(K_RETURN) || continuation_key_down?(K_RETURN)
-      if @cursor_x == 1
-        slice_head = ''
-        slice_tail = @content[@cursor_y - 1]
-      else
-        slice_head = @content[@cursor_y - 1][0..@cursor_x - 2]
-        slice_tail = @content[@cursor_y - 1][@cursor_x - 1, @content[@cursor_y - 1].length - (@cursor_x - 1)]
-      end
+      slice_head = @content[@cursor_y - 1][0...@cursor_x - 1]
+      slice_tail = @content[@cursor_y - 1][@cursor_x - 1..-1]
       @content[@cursor_y - 1] = slice_head
       @content.insert(@cursor_y, slice_tail)
       @cursor_x = 1
@@ -128,6 +150,7 @@ class EditorCore
         end
       else
         @content[@cursor_y - 1][@cursor_x - 2] = ''
+        @cursor_x -= 1
       end
     end
     if Input.key_push?(K_DELETE) || continuation_key_down?(K_DELETE)
@@ -139,6 +162,11 @@ class EditorCore
       else
         @content[@cursor_y - 1][@cursor_x - 1] = ''
       end
+    end
+    if Input.key_push?(K_TAB) || continuation_key_down?(K_TAB)
+      space = @indent_size - (@cursor_x - 1) % @indent_size
+      @content[@cursor_y - 1].insert(@cursor_x - 1, ' ' * space)
+      @cursor_x += space
     end
   end
 

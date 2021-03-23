@@ -1,17 +1,17 @@
 class ScrollablePage < RenderTarget
   attr_reader :pos
+  attr_accessor :scrollbar, :scrollbar_base
 
   def initialize(width, height, bgcolor: [0, 0, 0, 0],
                  page_width: nil, page_height: nil,
-                 scrollbar: nil, scrollbar_base: nil,
                  bar_w: 16, bar_color: [200, 200, 200], bar_base_color: C_WHITE)
     super(width, height, bgcolor)
     @page_width = page_width || self.width
     @page_height = page_height || self.height
 
     @bar_h_per = [self.height.to_f / @page_height, 1].min
-    @scrollbar = scrollbar || Image.new(bar_w, (self.height * @bar_h_per).to_i, bar_color)
-    @scrollbar_base = scrollbar_base || Image.new(bar_w, self.height, bar_base_color)
+    @scrollbar = Image.new(bar_w, (self.height * @bar_h_per).to_i, bar_color)
+    @scrollbar_base = Image.new(bar_w, self.height, bar_base_color)
 
     @pos = 0
     @_before_mouse_wheel = Input.mouse_wheel_pos
@@ -19,7 +19,7 @@ class ScrollablePage < RenderTarget
 
   def draw_scrollbar
     draw(width - @scrollbar_base.width, @pos, @scrollbar_base)
-    draw(width - @scrollbar.width, @pos * @bar_h_per + @pos, @scrollbar)
+    draw(width - @scrollbar.width + 1, @pos * @bar_h_per + @pos, @scrollbar)
   end
 
   def update
@@ -73,8 +73,8 @@ class ScrollablePage < RenderTarget
   end
 
   def draw_morph(x1, y1, x2, y2, x3, y3, x4, y4, image, option = {})
-    super(x1 - @pos, y1 - @pos, x2 - @pos, y2 - @pos,
-          x3 - @pos, y3 - @pos, x4 - @pos, y4 - @pos,
+    super(x1, y1 - @pos, x2, y2 - @pos,
+          x3, y3 - @pos, x4, y4 - @pos,
           image, option)
   end
 
@@ -87,15 +87,15 @@ class ScrollablePage < RenderTarget
   end
 
   def draw_line(x1, y1, x2, y2, color, z = 0)
-    super(x1 - @pos, y1 - @pos, x2 - @pos, y2 - @pos, color, z)
+    super(x1, y1 - @pos, x2, y2 - @pos, color, z)
   end
 
   def draw_box(x1, y1, x2, y2, color, z = 0)
-    super(x1 - @pos, y1 - @pos, x2 - @pos, y2 - @pos, color, z)
+    super(x1, y1 - @pos, x2, y2 - @pos, color, z)
   end
 
   def draw_box_fill(x1, y1, x2, y2, color, z = 0)
-    super(x1 - @pos, y1 - @pos, x2 - @pos, y2 - @pos, color, z)
+    super(x1, y1 - @pos, x2, y2 - @pos, color, z)
   end
 
   def draw_circle(x, y, r, color, z = 0)
