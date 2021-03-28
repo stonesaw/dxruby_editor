@@ -1,18 +1,29 @@
+require 'ripper'
+
 require_relative 'editor_core'
 require_relative 'scrollable_page'
+require_relative 'theme_color'
+
 
 class Editor < ScrollablePage
   attr_accessor :x, :y, :core
 
-  def initialize(width, height, bgcolor: [40, 44, 53],
+  def initialize(width, height,
                  page_width: nil, page_height: nil)
     super
     @x = Window.width - width
     @y = Window.height - height
     @core = EditorCore.new
+    @theme = ThemeColor.new("#{$PATH}/lib/themes/OneDark.json")
+    self.bgcolor = @theme.editor_bg
+    _ = scrollbar_base
+    self.scrollbar_base = Image.new(_.width, _.height).line(0, 0, 0, _.height, [60, 255, 255, 255])
+    _ = scrollbar
+    self.scrollbar = Image.new(_.width, _.height, [60, 255, 255, 255])
     @font21 = Font.new(21)
     @font_ = Font.new(14)
     @font10 = Font.new(10)
+
     @tick = 0
     @editor_main_x = 50
     @editor_main_y = 10
@@ -40,39 +51,122 @@ class Editor < ScrollablePage
 
   def draw_at_window(render_target: Window)
     draw_lineno
-    draw_content
+    draw_content_syntax
     draw_cursor
     draw_scrollbar
     draw_notifications
-    draw_footer
     render_target.draw(@x, @y, self)
+    draw_footer
   end
 
   protected def draw_lineno
     @core.content.length.times do |i|
       if i + 1 == @core.cursor_y
-        _color = [166, 176, 182]
+        _color = @theme.editor_lineno_active
+
+        # draw line highlight
+        draw_box_fill(0, @editor_main_y + @font21.size * i, 
+                      width, @font21.size * (i + 1) + 9, @theme.editor_line_highlight)
       else
-        _color = [85, 98, 113]
+        _color = @theme.editor_lineno
       end
-      draw_font(40 - @font21.get_width("#{i + 1}"), 10 + @font21.size * i, "#{i + 1}", @font21, color: _color)
+      draw_font(@editor_main_x - 10 - @font21.get_width("#{i + 1}"),
+                10 + @font21.size * i, "#{i + 1}", @font21, color: _color)
     end
   end
 
   protected def draw_content
-    # TODO シンタックスハイライト機能
-    @core.content.each_with_index do |c, i|
-      draw_font_ex(@editor_main_x, @editor_main_y + i * @font21.size, c, @font21)
+    @core.content.each_with_index do |str, i|
+      draw_font(@editor_main_x, @editor_main_y + i * @font21.size, str.chomp, @font21, color: @theme.editor_font)
     end
+  end
+
+  protected def draw_content_syntax
+    # TODO シンタックスハイライト機能
+    # pp Ripper.lex(@core.string) if @tick % 100 == 0
+    _width = 0
+    before_line = -1
+    Ripper.lex(@core.string).each do |_|
+      line, column = _[0][0], _[0][1]
+      symbol = _[1]
+      char = _[2]
+      lexer_state = _[3]
+
+      if before_line != line
+        _width = 0
+        before_line = line
+      end
+
+      # Ref https://github.com/ruby/ruby/blob/master/ext/ripper/eventids2.c#L83
+      _color =
+      case symbol
+      when :on_kw # class, def, end ...
+        [152, 102, 196]
+      when :on_op # operator
+        [152, 102, 196]
+      when :on_comma # comma
+        C_WHITE
+      when :on_period # period
+        C_WHITE
+      when :on_semicolon # semicolon
+        C_WHITE
+      # variable
+      when :on_ident, :on_ivar, :on_cvar, :on_gvar, :on_backref
+        C_RED
+      when :on_const # CONSTANT, ClassName
+        [247, 232, 96]
+      when :on_int # integer
+        [252, 199, 101]
+      when :on_float # float
+        [252, 199, 101]
+      when :on_tstring_beg # string
+        [181, 240, 137]
+      when :on_tstring_content # string
+        [181, 240, 137]
+      when :on_tstring_end # string
+        [181, 240, 137]
+      when :on_label, :symbeg # symbol
+        [252, 199, 101]
+      when :on_regexp_beg # regex
+        [104, 232, 226]
+      when :on_regexp_end # regex
+        [104, 232, 226]
+      when :on_lparen, :on_rparen # ()
+        C_WHITE
+      when :on_lbracket, :on_rbracket # []
+        C_WHITE
+      when :on_lbrace, :on_rbrace # {}
+        C_WHITE
+      when :on_comment # comment
+        [100, 100, 100]
+      else
+        [100, 100, 100]
+      end
+
+      draw_font(@editor_main_x + _width, @editor_main_y + (line - 1) * @font21.size, char.chomp, @font21, color: _color)
+      _width += @font21.get_width(char)
+    end
+    # @core.content.each_with_index do |c, i|
+    #   draw_font_ex(@editor_main_x, @editor_main_y + i * @font21.size, c, @font21)
+    # end
   end
 
   protected def draw_cursor
     _w = @font21.get_width(@core.content[@core.cursor_y - 1][0..@core.cursor_x - 2])
     _w = 0 if @core.cursor_x == 1
-    _alpha = Math.sin(@tick / 20.0).abs * 255
+
+    if @theme.editor_cursor.length == 3
+      _alpha = Math.sin(@tick / 20.0).abs * 255
+      _color = @theme.editor_cursor.dup
+      _color.unshift(_alpha)
+    else
+      _alpha = Math.sin(@tick / 20.0).abs * @theme.editor_cursor[0]
+      _color = @theme.editor_cursor.dup
+      _color[0] = _alpha
+    end
     draw_box_fill(@editor_main_x + _w,     @editor_main_y + (@core.cursor_y - 1) * @font21.size,
                   @editor_main_x + _w + 1, @core.cursor_y * @font21.size + 8,
-                  [_alpha, 80, 139, 255])
+                  _color)
   end
 
   protected def draw_notifications
@@ -83,6 +177,6 @@ class Editor < ScrollablePage
   end
 
   protected def draw_footer
-    draw_font(width - 300, height - 20, "行 #{@core.cursor_y}、列 #{@core.cursor_x}", @font10)
+    Window.draw_font(Window.width - 300, Window.height - 20, "行 #{@core.cursor_y}、列 #{@core.cursor_x}", @font10)
   end
 end

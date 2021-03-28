@@ -1,5 +1,6 @@
 class EditorCore
   attr_accessor :content, :cursor_x, :cursor_y
+  # attr_accessor :kana
 
   def initialize
     _con = 
@@ -8,7 +9,7 @@ a = [
   1,
   2, 3
 ]
-hash = {a: 1}
+hash1 = {a: 1}
 hash = {
   key1: 10,
   key2: 2.2
@@ -72,6 +73,7 @@ instance = A.new(1, 2)
       @_int2keycode[eval("K_#{key}")] = key
     end
     @indent_size = 2
+    # @kana = false
   end
 
   def update_cursor(tick)
@@ -82,10 +84,19 @@ instance = A.new(1, 2)
     # みたいにしたい
 
     if Input.key_push?(K_RIGHT) || continuation_key_down?(K_RIGHT)
-      @cursor_x += 1
-      if @cursor_x >= @content[@cursor_y - 1].length + 2 && @cursor_y != @content.length
-        @cursor_x = 0
-        @cursor_y += 1
+      if Input.key_down?(K_LCONTROL) || Input.key_down?(K_RCONTROL)
+        # hoge1 = [1, 2]
+        # hoge1| =| [1|,| 2|]
+        # moji /[a-z]|\d/
+        # kigo /^([a-z]|\d|\s)/
+        # p @content[@cursor_y - 1].split(/(^([a-z]|\d))/i)
+        # p @content[@cursor_y - 1].split(/([a-z]|\d|^([a-z]|\d|\s))/i)
+      else
+        @cursor_x += 1
+        if @cursor_x >= @content[@cursor_y - 1].length + 2 && @cursor_y != @content.length
+          @cursor_x = 0
+          @cursor_y += 1
+        end
       end
     end
 
