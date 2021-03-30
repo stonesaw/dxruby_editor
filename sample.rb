@@ -13,11 +13,9 @@ tick = 0
 Window.loop do
   break if Input.key_down?(K_ESCAPE)
 
-  editor.update
 
   Window.draw_font(0, 0, "[Main Window]", Font.default)
   Window.draw_font(0, 24, "fps : #{Window.real_fps}, tick : #{tick}", Font.default)
-
-  editor.draw_at_window
+  
   tick += 1
 end

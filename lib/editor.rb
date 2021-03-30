@@ -4,17 +4,21 @@ require_relative 'editor_core'
 require_relative 'scrollable_page'
 require_relative 'theme_color'
 
-
 class Editor < ScrollablePage
   attr_accessor :x, :y, :core
 
   def initialize(width, height,
                  page_width: nil, page_height: nil)
     super
+    Window.before_call[:editor_update] = method(:update)
+    Window.after_call[:editor_draw] = method(:draw_at_window)
+
     @x = Window.width - width
     @y = Window.height - height
     @core = EditorCore.new
     @theme = ThemeColor.new("#{$PATH}/lib/themes/OneDark.json")
+    # @theme = ThemeColor.new("#{$PATH}/lib/themes/one-dark.json")
+    # @theme = ThemeColor.new("#{$PATH}/lib/themes/dark_vs.json")
     self.bgcolor = @theme.editor_bg
     _ = scrollbar_base
     self.scrollbar_base = Image.new(_.width, _.height).line(0, 0, 0, _.height, [60, 255, 255, 255])
@@ -65,7 +69,7 @@ class Editor < ScrollablePage
         _color = @theme.editor_lineno_active
 
         # draw line highlight
-        draw_box_fill(0, @editor_main_y + @font21.size * i, 
+        draw_box_fill(0, @editor_main_y + @font21.size * i,
                       width, @font21.size * (i + 1) + 9, @theme.editor_line_highlight)
       else
         _color = @theme.editor_lineno
@@ -83,7 +87,7 @@ class Editor < ScrollablePage
 
   protected def draw_content_syntax
     # TODO シンタックスハイライト機能
-    # pp Ripper.lex(@core.string) if @tick % 100 == 0
+    pp Ripper.lex(@core.string) if @tick % 100 == 0
     _width = 0
     before_line = -1
     Ripper.lex(@core.string).each do |_|
@@ -99,49 +103,40 @@ class Editor < ScrollablePage
 
       # Ref https://github.com/ruby/ruby/blob/master/ext/ripper/eventids2.c#L83
       _color =
-      case symbol
-      when :on_kw # class, def, end ...
-        [152, 102, 196]
-      when :on_op # operator
-        [152, 102, 196]
-      when :on_comma # comma
-        C_WHITE
-      when :on_period # period
-        C_WHITE
-      when :on_semicolon # semicolon
-        C_WHITE
-      # variable
-      when :on_ident, :on_ivar, :on_cvar, :on_gvar, :on_backref
-        C_RED
-      when :on_const # CONSTANT, ClassName
-        [247, 232, 96]
-      when :on_int # integer
-        [252, 199, 101]
-      when :on_float # float
-        [252, 199, 101]
-      when :on_tstring_beg # string
-        [181, 240, 137]
-      when :on_tstring_content # string
-        [181, 240, 137]
-      when :on_tstring_end # string
-        [181, 240, 137]
-      when :on_label, :symbeg # symbol
-        [252, 199, 101]
-      when :on_regexp_beg # regex
-        [104, 232, 226]
-      when :on_regexp_end # regex
-        [104, 232, 226]
-      when :on_lparen, :on_rparen # ()
-        C_WHITE
-      when :on_lbracket, :on_rbracket # []
-        C_WHITE
-      when :on_lbrace, :on_rbrace # {}
-        C_WHITE
-      when :on_comment # comment
-        [100, 100, 100]
-      else
-        [100, 100, 100]
-      end
+        case symbol
+        when :on_comment # comment
+          @theme.editor_syntax_comment
+        when :on_kw # class, def, end ...
+          @theme.editor_syntax_keyword
+        when :on_op # operator
+          @theme.editor_syntax_op
+        when :on_const # CONSTANT, ClassName
+          @theme.editor_syntax_constant
+        when :on_label, :symbeg # symbol
+          @theme.editor_syntax_constant
+        when :on_int, :on_float # integer
+          @theme.editor_syntax_numeric
+        when :on_ident, :on_ivar, :on_cvar, :on_gvar, :on_backref # variable
+          @theme.editor_syntax_variable
+        when :on_tstring_beg, :on_tstring_content, :on_tstring_end # string
+          @theme.editor_syntax_string
+        when :on_regexp_beg, :on_regexp_end # regex
+          @theme.editor_syntax_regex
+        # when :on_comma # comma
+        #   @theme.editor_font
+        # when :on_period # period
+        #   @theme.editor_font
+        # when :on_semicolon # semicolon
+        #   @theme.editor_font
+        # when :on_lparen, :on_rparen # ()
+        #   C_WHITE
+        # when :on_lbracket, :on_rbracket # []
+        #   C_WHITE
+        # when :on_lbrace, :on_rbrace # {}
+        #   C_WHITE
+        else
+          @theme.editor_font
+        end
 
       draw_font(@editor_main_x + _width, @editor_main_y + (line - 1) * @font21.size, char.chomp, @font21, color: _color)
       _width += @font21.get_width(char)

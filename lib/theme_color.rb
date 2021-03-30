@@ -13,12 +13,22 @@ class ThemeColor
   attr_reader :editor_line_highlight
   attr_reader :editor_cursor
 
-  # Converts the object into textual markup given a specific `format` 
+  attr_reader :editor_syntax_comment
+  attr_reader :editor_syntax_class
+  attr_reader :editor_syntax_keyword
+  attr_reader :editor_syntax_op
+  attr_reader :editor_syntax_constant
+  attr_reader :editor_syntax_numeric
+  attr_reader :editor_syntax_variable
+  attr_reader :editor_syntax_string
+  attr_reader :editor_syntax_regex
+
+  # Converts the object into textual markup given a specific `format`
   # (defaults to `:html`)
   #
   # == Parameters:
   # format::
-  #   A Symbol declaring the format to convert the object to. This 
+  #   A Symbol declaring the format to convert the object to. This
   #   can be `:text` or `:html`.
   #
   # == Returns:
@@ -49,20 +59,36 @@ class ThemeColor
     #         "fontStyle": "italic"
     #     }
     # }
-    @theme_json['tokenColors'].each do |token|
+
+    @_syntax = {
+      # "syntax scope": '@variable_name'
+      "comment": '@editor_syntax_comment',
+      "entity.name.type": '@editor_syntax_class',
+      "keyword": '@editor_syntax_keyword',
+      "keyword.operator": '@editor_syntax_op',
+      "constant": '@editor_syntax_constant',
+      "constant.numeric": '@editor_syntax_numeric',
+      "variable": '@editor_syntax_variable',
+      "string": '@editor_syntax_string',
+      "string.regexp": '@editor_syntax_regex',
+    }
+
+    @theme_json['tokenColors'].reverse_each do |token|
       scope = token['scope']
       color = token['settings']['foreground']
 
-      if scope.include?('comment')
-        @editor_syntax_comment = color
+      @_syntax.each do |syntax, var_name|
+        if scope.include?(syntax.to_s)
+          instance_variable_set(var_name, parse_color_code(color))
+        end
       end
     end
   end
 
-  # conversion VSCode Color formats -> DXRuby color  
-  # VSCode Color formats {https://code.visualstudio.com/api/references/theme-color#color-formats}  
-  # DXRuby ColorCode {http://mirichi.github.io/dxruby-doc/api/constant_color.html}  
-  # 
+  # conversion VSCode Color formats -> DXRuby color
+  # VSCode Color formats {https://code.visualstudio.com/api/references/theme-color#color-formats}
+  # DXRuby ColorCode {http://mirichi.github.io/dxruby-doc/api/constant_color.html}
+  #
   # @param [String] color_code like +#RGB+, +#RGBA+, +#RRGGBB+ and +#RRGGBBAA+ (VSCode Color formats)
   # @return [Array] DXRuby color like +[A,R,G,B]+ or +[R,G,B]+
   def parse_color_code(color_code)
