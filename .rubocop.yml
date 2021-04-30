@@ -4,8 +4,15 @@ inherit_from:
 
 
 
+AllCops:
+  Exclude:
+    - '_assets/*'
+
 Rails:
   Enabled: false
+
+# Style/RedundantSelf:
+#   Enabled: false
 
 # {} は 1 行で書くときに主に使われるので、スペースよりも
 # 横に長くならない方が嬉しさが多い。

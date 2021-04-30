@@ -16,6 +16,6 @@ Window.loop do
 
   Window.draw_font(0, 0, "[Main Window]", Font.default)
   Window.draw_font(0, 24, "fps : #{Window.real_fps}, tick : #{tick}", Font.default)
-  
+
   tick += 1
 end

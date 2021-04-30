@@ -3,8 +3,8 @@ class EditorCore
   # attr_accessor :kana
 
   def initialize
-    _con = 
-"a = [1, 2, 3]
+    _con =
+      "aa1 = [1, 2, 3]
 a = [
   1,
   2, 3
@@ -70,6 +70,7 @@ instance = A.new(1, 2)
     end
     @_int2keycode = {}
     @_keys.each do |key, val|
+      # rubocop:disable Security/Eval
       @_int2keycode[eval("K_#{key}")] = key
     end
     @indent_size = 2
@@ -87,9 +88,9 @@ instance = A.new(1, 2)
       if Input.key_down?(K_LCONTROL) || Input.key_down?(K_RCONTROL)
         # hoge1 = [1, 2]
         # hoge1| =| [1|,| 2|]
-        # moji /[a-z]|\d/
-        # kigo /^([a-z]|\d|\s)/
-        # p @content[@cursor_y - 1].split(/(^([a-z]|\d))/i)
+        # moji = /[a-z]|\d/
+        # kigo = /^([a-z]|\d)/
+        # p @content[@cursor_y - 1].split(/(\s*#{kigo}*#{moji}*)/i).map {|c| c == '' ? nil : c }.compact
         # p @content[@cursor_y - 1].split(/([a-z]|\d|^([a-z]|\d|\s))/i)
       else
         @cursor_x += 1
@@ -123,7 +124,9 @@ instance = A.new(1, 2)
     if new_keys != []
       @_continuation_key_down = [new_keys[0], 0]
     end
-    @_continuation_key_down[1] += 1 if !@_continuation_key_down[0].nil? && Input.key_down?(@_continuation_key_down[0])
+    if !@_continuation_key_down[0].nil? && Input.key_down?(@_continuation_key_down[0])
+      @_continuation_key_down[1] += 1
+    end
     @_old_keys = Input.keys
   end
 
@@ -190,7 +193,8 @@ instance = A.new(1, 2)
   end
 
   private def check_continuation_key_down
-    if !@_continuation_key_down[0].nil? && Input.key_down?(@_continuation_key_down[0]) && @_continuation_key_down[1] > 40
+    if !@_continuation_key_down[0].nil? &&
+       Input.key_down?(@_continuation_key_down[0]) && @_continuation_key_down[1] > 40
       keycode = @_int2keycode[@_continuation_key_down[0]]
       return nil if @_keys[keycode].nil?
       if Input.key_down?(K_LSHIFT) || Input.key_down?(K_RSHIFT)
@@ -206,6 +210,8 @@ instance = A.new(1, 2)
   end
 
   private def continuation_key_down?(keycode)
-    Input.key_down?(keycode) && @_continuation_key_down[0] == keycode && @_continuation_key_down[1] > 40
+    Input.key_down?(keycode) &&
+    @_continuation_key_down[0] == keycode &&
+    @_continuation_key_down[1] > 40
   end
 end

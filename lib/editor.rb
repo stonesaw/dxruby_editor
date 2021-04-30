@@ -34,11 +34,24 @@ class Editor < ScrollablePage
     @play_button_images = []
     @runcode = ''
     @notifications = []
+
+    set_page_height(@editor_main_y + (@core.content.length - 1) * @font21.size + self.height)
   end
 
   def update
-    super
+    unless Input.keys.empty?
+      if height < @core.cursor_y * @font21.size - pos
+        self.pos += @font21.size
+      elsif @editor_main_y > @core.cursor_y * @font21.size - self.pos
+        self.pos -= @font21.size
+      end
+    end
+
+    set_page_height(@editor_main_y + (@core.content.length - 1) * @font21.size + height)
+
     @core.input(@tick)
+
+    super
 
     @runcode = @core.string if Input.key_push?(K_F5)
     begin
@@ -87,7 +100,7 @@ class Editor < ScrollablePage
 
   protected def draw_content_syntax
     # TODO シンタックスハイライト機能
-    pp Ripper.lex(@core.string) if @tick % 100 == 0
+    # pp Ripper.lex(@core.string) if @tick % 100 == 0
     _width = 0
     before_line = -1
     Ripper.lex(@core.string).each do |_|
