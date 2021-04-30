@@ -1,13 +1,10 @@
-require 'dxruby'
-
-$PATH = File.dirname(__FILE__)
-
-require_relative 'lib/editor'
+require 'dxruby_editor'
+# include DXRubyEditor
 
 Window.bgcolor = [30, 30, 30]
 Window.width = 1280
 
-editor = Editor.new(640, 480, page_height: 800)
+editor = DXRubyEditor::Editor.new(640, 480, page_height: 800)
 
 tick = 0
 Window.loop do
