@@ -3,34 +3,8 @@ module DXRubyEditor
     attr_accessor :content, :cursor_x, :cursor_y
     # attr_accessor :kana
 
-    def initialize
-      _con =
-        "aa1 = [1, 2, 3]
-  a = [
-    1,
-    2, 3
-  ]
-  hash1 = {a: 1}
-  hash = {
-    key1: 10,
-    key2: 2.2
-  }
-
-  str = 'abc'
-  if str =~ /a(.+)/
-    p $1
-  end
-
-  class A
-    def initialize(x, y)
-      @x = x
-      @y = y
-    end
-  end
-
-  instance = A.new(1, 2)
-  "
-      @content = _con.split(/\R/)
+    def initialize(content)
+      @content = content.split(/\R/)
       @cursor_x = 1
       @cursor_y = 1
 

@@ -5,14 +5,15 @@ module DXRubyEditor
     attr_accessor :x, :y, :core
 
     def initialize(width, height,
-                   page_width: nil, page_height: nil)
-      super
+                   page_width: nil, page_height: nil,
+                   content: "")
+      super(width, height, page_width: page_width, page_height: page_height)
       Window.before_call[:editor_update] = method(:update)
       Window.after_call[:editor_draw] = method(:draw_at_window)
 
       @x = Window.width - width
       @y = Window.height - height
-      @core = EditorCore.new
+      @core = EditorCore.new(content)
       @theme = ThemeColor.new(File.join($LOAD_PATH[0], "assets/OneDark.json"))
       # @theme = ThemeColor.new("#{$PATH}/lib/themes/one-dark.json")
       # @theme = ThemeColor.new("#{$PATH}/lib/themes/dark_vs.json")
