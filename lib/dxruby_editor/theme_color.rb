@@ -13,6 +13,8 @@ module DXRubyEditor
     attr_reader :editor_lineno_active
     attr_reader :editor_line_highlight
     attr_reader :editor_cursor
+    attr_reader :editor_scrollbar
+    attr_reader :editor_scrollbar_active
 
     attr_reader :editor_syntax_comment
     attr_reader :editor_syntax_class
@@ -41,12 +43,14 @@ module DXRubyEditor
         @theme_json = JSON.load(file)
       end
 
-      @editor_bg             = parse_color_code(@theme_json['colors']['editor.background']) || C_CYAN
-      @editor_font           = parse_color_code(@theme_json['colors']['editor.foreground']) || C_CYAN
-      @editor_lineno         = parse_color_code(@theme_json['colors']['editorLineNumber.foreground']) || C_CYAN
-      @editor_lineno_active  = parse_color_code(@theme_json['colors']['editorLineNumber.activeForeground']) || C_CYAN
-      @editor_line_highlight = parse_color_code(@theme_json['colors']['editor.lineHighlightBackground']) || C_CYAN
-      @editor_cursor         = parse_color_code(@theme_json['colors']['editorCursor.foreground']) || C_CYAN
+      @editor_bg               = parse_color_code(@theme_json['colors']['editor.background']) || C_CYAN
+      @editor_font             = parse_color_code(@theme_json['colors']['editor.foreground']) || C_CYAN
+      @editor_lineno           = parse_color_code(@theme_json['colors']['editorLineNumber.foreground']) || C_CYAN
+      @editor_lineno_active    = parse_color_code(@theme_json['colors']['editorLineNumber.activeForeground']) || C_CYAN
+      @editor_line_highlight   = parse_color_code(@theme_json['colors']['editor.lineHighlightBackground']) || C_CYAN
+      @editor_cursor           = parse_color_code(@theme_json['colors']['editorCursor.foreground']) || C_CYAN
+      @editor_scrollbar        = parse_color_code(@theme_json['colors']['scrollbarSlider.background']) || C_CYAN
+      @editor_scrollbar_active = parse_color_code(@theme_json['colors']['scrollbarSlider.activeBackground']) || C_CYAN
 
       # find scope
       # token example

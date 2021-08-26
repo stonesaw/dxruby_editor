@@ -1,6 +1,7 @@
 module DXRubyEditor
   class ScrollablePage < RenderTarget
-    attr_accessor :pos, :scrollbar, :scrollbar_base
+    attr_accessor :pos
+    attr_reader :scrollbar, :scrollbar_base
 
     def initialize(width, height, bgcolor: [0, 0, 0, 0],
                    page_width: nil, page_height: nil,
@@ -18,6 +19,16 @@ module DXRubyEditor
 
       @pos = 0
       @_before_mouse_wheel = Input.mouse_wheel_pos
+    end
+
+    def scrollbar=(image)
+      @bar_color = image[0, 0]
+      @scrollbar = image
+    end
+
+    def scrollbar_base=(image)
+      @bar_base_color = image[0, 0]
+      @scrollbar_base = image
     end
 
     def draw_scrollbar

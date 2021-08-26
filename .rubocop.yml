@@ -6,6 +6,7 @@ inherit_from:
 
 AllCops:
   Exclude:
+    - 'examples/*'
     - '_assets/*'
 
 Rails:

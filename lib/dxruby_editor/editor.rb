@@ -4,36 +4,32 @@ module DXRubyEditor
   class Editor < ScrollablePage
     attr_accessor :x, :y, :core
 
-    def initialize(width, height,
-                   page_width: nil, page_height: nil,
-                   content: "")
-      super(width, height, page_width: page_width, page_height: page_height)
+    def initialize(position: :right, size: 640, content: "", theme: nil)
+      super(size, Window.height)
       Window.before_call[:editor_update] = method(:update)
       Window.after_call[:editor_draw] = method(:draw_at_window)
 
       @x = Window.width - width
       @y = Window.height - height
       @core = EditorCore.new(content)
-      @theme = ThemeColor.new(File.join($LOAD_PATH[0], "assets/OneDark.json"))
-      # @theme = ThemeColor.new("#{$PATH}/lib/themes/one-dark.json")
-      # @theme = ThemeColor.new("#{$PATH}/lib/themes/dark_vs.json")
+      @theme = theme || ThemeColor.new(File.join($LOAD_PATH[0], "assets/OneDark.json"))
+
       self.bgcolor = @theme.editor_bg
-      _ = scrollbar_base
-      self.scrollbar_base = Image.new(_.width, _.height).line(0, 0, 0, _.height, [60, 255, 255, 255])
-      _ = scrollbar
-      self.scrollbar = Image.new(_.width, _.height, [60, 255, 255, 255])
+      self.scrollbar_base = Image.new(scrollbar_base.width, scrollbar_base.height).
+        line(0, 0, 0, scrollbar_base.height, @theme.editor_scrollbar)
+      self.scrollbar = Image.new(scrollbar.width, scrollbar.height, @theme.editor_scrollbar)
       @font21 = Font.new(21)
       @font_ = Font.new(14)
       @font10 = Font.new(10)
 
       @tick = 0
       @editor_main_x = 50
-      @editor_main_y = 10
+      @editor_main_y = 20
       @play_button_images = []
       @runcode = ''
       @notifications = []
 
-      set_page_height(@editor_main_y + (@core.content.length - 1) * @font21.size + self.height)
+      set_page_height(@editor_main_y + (@core.content.length - 1) * @font21.size + height)
     end
 
     def update
@@ -62,8 +58,6 @@ module DXRubyEditor
       @tick += 1
     end
 
-    alias_method :draw_self, :draw
-
     def draw_at_window(render_target: Window)
       draw_lineno
       draw_content_syntax
@@ -80,13 +74,13 @@ module DXRubyEditor
           _color = @theme.editor_lineno_active
 
           # draw line highlight
-          draw_box_fill(0, @editor_main_y + @font21.size * i,
-                        width, @font21.size * (i + 1) + 9, @theme.editor_line_highlight)
+          draw_box_fill(0,     @editor_main_y + @font21.size * i,
+                        width, @editor_main_y + @font21.size * (i + 1), @theme.editor_line_highlight)
         else
           _color = @theme.editor_lineno
         end
         draw_font(@editor_main_x - 10 - @font21.get_width("#{i + 1}"),
-                  10 + @font21.size * i, "#{i + 1}", @font21, color: _color)
+                  @editor_main_y + @font21.size * i, "#{i + 1}", @font21, color: _color)
       end
     end
 
@@ -170,8 +164,8 @@ module DXRubyEditor
         _color = @theme.editor_cursor.dup
         _color[0] = _alpha
       end
-      draw_box_fill(@editor_main_x + _w,     @editor_main_y + (@core.cursor_y - 1) * @font21.size,
-                    @editor_main_x + _w + 1, @core.cursor_y * @font21.size + 8,
+      draw_box_fill(@editor_main_x + _w,     @editor_main_y + @font21.size * (@core.cursor_y - 1),
+                    @editor_main_x + _w + 1, @editor_main_y + @font21.size * @core.cursor_y,
                     _color)
     end
 
