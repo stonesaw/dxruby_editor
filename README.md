@@ -1,7 +1,7 @@
 # DXRubyEditor
 An editor (similar to vscode) and runtime environment for DXRuby.
 
-<a href="./README/ss01.jpg"><img width="70%" src="./README/ss01.jpg" ></a>
+<img width="70%" src="./ss01.jpg" >
 
 
 ## Installation

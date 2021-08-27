@@ -1,0 +1,8 @@
+commands = [
+  'bundle exec rubocop --auto-correct --auto-gen-config',
+  'bundle exec yardoc lib/**/*.rb'
+]
+commands.each do |command|
+  puts '> ' << command << "\n"
+  system command
+end

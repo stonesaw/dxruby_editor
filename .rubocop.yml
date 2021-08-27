@@ -1,30 +1,108 @@
-inherit_from:
-  - .rubocop_todo.yml
-  - .rubocop_airbnb.yml
-
-
+inherit_from: .rubocop_todo.yml
 
 AllCops:
   Exclude:
-    - 'examples/*'
-    - '_assets/*'
+    - 'examples/**/*'
+    - 'script/**/*'
+    - 'spec/**/*'
 
-Rails:
-  Enabled: false
-
-# Style/RedundantSelf:
-#   Enabled: false
-
-# {} は 1 行で書くときに主に使われるので、スペースよりも
-# 横に長くならない方が嬉しさが多い。
-# そもそも {| のスタイルの方が一般的だったと認識している。
-Layout/SpaceInsideBlockBraces:
-  SpaceBeforeBlockParameters: false
-
-# 2行以上の空行を許可する
 Layout/EmptyLines:
   Enabled: false
 
-# 行の長さの最大値を110に
-Metrics/LineLength:
-  Max: 120
+Style/StringLiteralsInInterpolation:
+  Enabled: false
+
+Layout/DotPosition:
+  EnforcedStyle: "trailing"
+
+Metrics/AbcSize:
+  Max: 50
+
+Metrics/BlockLength:
+  Max: 100
+
+Metrics/ClassLength:
+  Max: 250
+
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+Metrics/MethodLength:
+  Max: 50
+
+Metrics/ModuleLength:
+  Max: 250
+
+Metrics/PerceivedComplexity:
+  Max: 10
+Naming/HeredocDelimiterNaming:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/BlockDelimiters:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/IfUnlessModifier:
+  Enabled: false
+
+Style/NegatedIf:
+  Enabled: false
+
+Style/GuardClause:
+  Enabled: false
+
+Style/MutableConstant:
+  Enabled: false
+
+Style/NumericPredicate:
+  Enabled: false
+
+Style/PercentLiteralDelimiters:
+  Enabled: false
+
+Style/PerlBackrefs:
+  Enabled: false
+
+Style/RaiseArgs:
+  Enabled: false
+
+Style/RedundantReturn:
+  Enabled: false
+
+Style/RescueStandardError:
+  Enabled: false
+
+Style/StderrPuts:
+  Enabled: false
+
+Style/StringLiterals:
+  Enabled: false
+
+Style/SymbolArray:
+  EnforcedStyle: brackets
+
+Style/TrailingCommaInArrayLiteral:
+  Enabled: false
+
+Style/TrailingCommaInHashLiteral:
+  Enabled: false
+
+Style/ZeroLengthPredicate:
+  Enabled: false
+
+Style/WordArray:
+  Enabled: false
+
+Style/AsciiComments:
+  Enabled: false
+
+Style/NumericLiterals:
+  Enabled: false
+
+Layout/EndOfLine:
+  Enabled: false

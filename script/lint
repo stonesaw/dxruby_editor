@@ -1,0 +1,3 @@
+command = 'bundle exec rubocop --auto-correct --auto-gen-config'
+puts '> ' << command
+system command

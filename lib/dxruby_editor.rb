@@ -1,14 +1,17 @@
 # frozen_string_literal: true
 
-require_relative "dxruby_editor/version"
+require_relative 'dxruby_editor/version'
 
-require "dxruby"
+require 'pp'
+require 'dxruby'
+require 'ripper'
 
-require_relative "dxruby_editor/scrollable_page"
-require_relative "dxruby_editor/theme_color"
-require_relative "dxruby_editor/editor_core"
-require_relative "dxruby_editor/editor"
-
+require_relative 'dxruby_editor/core/key_input'
+require_relative 'dxruby_editor/core/mouse_input'
+require_relative 'dxruby_editor/core/renderer'
+require_relative 'dxruby_editor/core/theme'
+require_relative 'dxruby_editor/editor_context'
+require_relative 'dxruby_editor/editor'
 
 module DXRubyEditor
   class Error < StandardError; end
