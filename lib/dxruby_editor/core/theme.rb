@@ -85,7 +85,17 @@ module DXRubyEditor
         line_highlight: '#99BBFF0A',
         cursor: '#528BFF',
         scrollbar: '#4E566680',
-        scrollbar_active: '#747D9180'
+        scrollbar_active: '#747D9180',
+
+        syntax_comment: '#5C6370',
+        syntax_class: '#E5C07B',
+        syntax_keyword: '#C678DD',
+        syntax_op: '#C678DD',
+        syntax_constant: '#D19A66',
+        syntax_numeric: '#D19A66',
+        syntax_variable: '#E06C75',
+        syntax_string: '#98C379',
+        syntax_regex: '#56B6C2',
       }.freeze
     end
   end

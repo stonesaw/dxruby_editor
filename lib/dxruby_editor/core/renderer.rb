@@ -3,8 +3,8 @@ module DXRubyEditor
     module Renderer
       def update(target, context, theme)
         draw_lineno(target, context, theme)
-        draw_text(target, context, theme)
-        # draw_text_syntax(target, context, theme)
+        # draw_text(target, context, theme)
+        draw_text_syntax(target, context, theme)
         draw_cursor(target, context, theme)
         # draw_scrollbar(target, context, theme)
         # draw_notifications(target, context, theme)

@@ -79,7 +79,7 @@
   <dl>
     <dt>Defined in:</dt>
     <dd>lib/dxruby_editor.rb<span class="defines">,<br />
-  lib/dxruby_editor/editor.rb,<br /> lib/dxruby_editor/core/theme.rb,<br /> lib/dxruby_editor/core/renderer.rb,<br /> lib/dxruby_editor/core/key_input.rb,<br /> lib/dxruby_editor/editor_context.rb,<br /> lib/dxruby_editor/core/mouse_input.rb</span>
+  lib/dxruby_editor/editor.rb,<br /> lib/dxruby_editor/core/theme.rb,<br /> lib/dxruby_editor/core/command.rb,<br /> lib/dxruby_editor/core/renderer.rb,<br /> lib/dxruby_editor/core/key_input.rb,<br /> lib/dxruby_editor/editor_context.rb,<br /> lib/dxruby_editor/core/mouse_input.rb</span>
 </dd>
   </dl>
   
@@ -115,7 +115,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#draw_at_window-instance_method" title="#draw_at_window (instance method)">#<strong>draw_at_window</strong>  &#x21d2; Object </a>
+      <a href="#_rendering-instance_method" title="#_rendering (instance method)">#<strong>_rendering</strong>  &#x21d2; Object </a>
     
 
     
@@ -144,9 +144,9 @@
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="draw_at_window-instance_method">
+  <h3 class="signature first" id="_rendering-instance_method">
   
-    #<strong>draw_at_window</strong>  &#x21d2; <tt>Object</tt> 
+    #<strong>_rendering</strong>  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -158,15 +158,15 @@
       <pre class="lines">
 
 
-69
-70
-71
-72</pre>
+75
+76
+77
+78</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/dxruby_editor/editor.rb', line 69</span>
+      <pre class="code"><span class="info file"># File 'lib/dxruby_editor/editor.rb', line 75</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_draw_at_window'>draw_at_window</span>
+<span class='kw'>def</span> <span class='id identifier rubyid__rendering'>_rendering</span>
   <span class='const'><span class='object_link'><a href="DXRubyEditor/Core.html" title="DXRubyEditor::Core (module)">Core</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="DXRubyEditor/Core/Renderer.html" title="DXRubyEditor::Core::Renderer (module)">Renderer</a></span></span><span class='period'>.</span><span class='id identifier rubyid_update'><span class='object_link'><a href="DXRubyEditor/Core/Renderer.html#update-class_method" title="DXRubyEditor::Core::Renderer.update (method)">update</a></span></span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='ivar'>@context</span><span class='comma'>,</span> <span class='ivar'>@theme</span><span class='rparen'>)</span>
   <span class='const'>Window</span><span class='period'>.</span><span class='id identifier rubyid_draw'>draw</span><span class='lparen'>(</span><span class='ivar'>@x</span><span class='comma'>,</span> <span class='ivar'>@y</span><span class='comma'>,</span> <span class='kw'>self</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
@@ -180,7 +180,7 @@
 </div>
 
       <div id="footer">
-  Generated on Sat Aug 28 15:48:31 2021 by
+  Generated on Sat Aug 28 17:39:25 2021 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.26 (ruby-2.6.6).
 </div>
