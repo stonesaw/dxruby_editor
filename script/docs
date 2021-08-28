@@ -1,0 +1,3 @@
+commands = 'bundle exec yardoc'
+puts '> ' << command << "\n"
+system command
